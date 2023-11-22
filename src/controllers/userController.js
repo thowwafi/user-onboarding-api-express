@@ -98,7 +98,7 @@ async function getUserProfile(req, res) {
     }
 }
 
-async function updateUserProfile(req, res) {
+async function  updateUserProfile(req, res) {
     try {
       const accessToken = req.headers.authorization?.replace('Bearer ', ''); // Assuming the token is sent in the Authorization header
   
@@ -122,7 +122,7 @@ async function updateUserProfile(req, res) {
         updatedProfile.profilePictureUrl = profilePictureUrl;
       }
   
-      const updatedUserProfile = await userService.updateUserProfile(userProfile.userId, updatedProfile);
+      const updatedUserProfile = await userService.updateUserProfile(userProfile.username, updatedProfile);
   
       return res.status(200).json({
         message: 'User profile updated successfully.',

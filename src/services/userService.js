@@ -79,19 +79,31 @@ async function getUserProfileByUsername(username) {
     return userDoc.data();
 }
 
-async function updateUserProfile(userId, updatedProfile) {
-    if (!userId || typeof userId !== 'string') {
+async function updateUserProfile(username, updatedProfile) {
+    if (!username || typeof username !== 'string') {
       return null; // Invalid user ID
     }
   
     const usersCollection = admin.firestore().collection('users');
-    const userDocRef = usersCollection.doc(userId);
-  
-    await userDocRef.update(updatedProfile);
+    const querySnapshot = await usersCollection.where('username', '==', username).get();
+    const userDocRef = querySnapshot.docs[0].ref;
+    
+    const sanitizedProfile = sanitizeObject(updatedProfile);
+    await userDocRef.update(sanitizedProfile);
   
     // Retrieve and return the updated user profile
     const updatedUserDoc = await userDocRef.get();
     return updatedUserDoc.data();
+}
+
+function sanitizeObject(obj) {
+    const sanitizedObj = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && obj[key] !== undefined) {
+        sanitizedObj[key] = obj[key];
+      }
+    }
+    return sanitizedObj;
 }
 
 module.exports = {
