@@ -55,23 +55,23 @@ function generateAccessToken(user) {
 function getUserProfileByToken(token) {
     try {
       const decodedToken = jwt.verify(token, JWT_SECRET_KEY);
-      const userId = decodedToken.userId; // Assuming the user ID is included in the token payload
+      const username = decodedToken.username; // Assuming the user ID is included in the token payload
   
-      return getUserProfileById(userId);
+      return getUserProfileByUsername(username);
     } catch (error) {
       // Token is invalid or expired
       return null;
     }
 }
 
-async function getUserProfileById(userId) {
-    if (!userId || typeof userId !== 'string') {
+async function getUserProfileByUsername(username) {
+    if (!username || typeof username !== 'string') {
       return null; // Invalid user ID
     }
   
     const usersCollection = admin.firestore().collection('users');
-    const userDoc = await usersCollection.doc(userId).get();
-  
+    const querySnapshot = await usersCollection.where('username', '==', username).get();
+    const userDoc = querySnapshot.docs[0];
     if (!userDoc.exists) {
       return null; // User not found
     }
@@ -101,6 +101,6 @@ module.exports = {
   authenticateUser,
   generateAccessToken,
   getUserProfileByToken,
-  getUserProfileById,
+  getUserProfileByUsername,
   updateUserProfile
 };
