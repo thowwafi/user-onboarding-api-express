@@ -1,3 +1,41 @@
+### Getting Started with User Onboarding API Project
+#### Steps:
+
+1. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/thowwafi/user-onboarding-api-express.git
+   ```
+
+2. **Navigate to the Project Directory:**
+
+   ```bash
+   cd user-onboarding-api-express
+   ```
+
+3. **Install Dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+4. **Start the Server:**
+
+   ```bash
+   npm start
+   ```
+
+   This will start the server at `http://localhost:3000`.
+
+5. **Run Tests:**
+
+   ```bash
+   npm test
+   ```
+
+   This will execute the unit tests using Jest.
+
+
 ### API Documentation
 
 ---
