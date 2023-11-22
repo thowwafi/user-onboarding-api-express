@@ -17,13 +17,14 @@ admin.initializeApp({
 // Middleware Setup
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer({ dest: 'temp/' }).single('profilePicture'));
+// app.use(multer({ dest: 'temp/' }).single('profilePicture'));
+const upload = multer({ dest: 'temp/' });
 
 
 app.post('/api/register', userController.registerUser);
 app.post('/api/login', userController.loginUser);
 app.get('/api/profile', userController.getUserProfile);
-app.put('/api/profile', userController.updateUserProfile);
+app.put('/api/profile', upload.single('profilePicture'), userController.updateUserProfile);
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

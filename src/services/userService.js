@@ -1,8 +1,59 @@
 const admin = require('firebase-admin');
 const jwt = require('jsonwebtoken');
+const { Storage } = require('@google-cloud/storage');
 const JWT_SECRET_KEY = 'your-secret-key';
 
-// Check if the username is unique
+// const serviceAccount = require('../../firebase-key.json');
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount),
+//     databaseURL: 'https://user-onboarding-api-default-rtdb.asia-southeast1.firebasedatabase.app/',
+// });
+
+const storage = new Storage({
+    projectId: 'user-onboarding-api',
+});
+const bucket = storage.bucket('user-onboarding-api.appspot.com');
+
+// Handle file upload
+async function uploadProfilePicture(file) {
+    try {
+      // Check if the file is present
+      if (!file) {
+        throw new Error('No file provided for upload.');
+      }
+  
+      // Generate a unique filename or use the original filename
+      const fileName = `${Date.now()}_${file.originalname}`;
+  
+      // Specify the path within the bucket where the file should be stored
+      const filePath = `profile_pictures/${fileName}`;
+  
+      // Create a write stream to upload the file to Firebase Storage
+      const fileUploadStream = bucket.file(filePath).createWriteStream();
+  
+      // Handle events for the file upload stream
+      fileUploadStream.on('error', (err) => {
+        console.error('Error during file upload:', err);
+        throw err;
+      });
+  
+      fileUploadStream.on('finish', () => {
+        console.log('File upload successful.');
+      });
+  
+      // Pipe the file buffer into the write stream
+      fileUploadStream.end(file.buffer);
+  
+      // Get the public URL of the uploaded file
+      const filePublicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+  
+      return filePublicUrl;
+    } catch (error) {
+      console.error('Error during file upload:', error);
+      throw error;
+    }
+}
+
 async function isUsernameUnique(username) {
     const usersCollection = admin.firestore().collection('users');
     
@@ -11,11 +62,6 @@ async function isUsernameUnique(username) {
   
     // If there are no matching documents, the username is unique
     return querySnapshot.empty;
-}
-
-// Handle file upload
-async function uploadProfilePicture(file) {
-  // Implementation goes here...
 }
 
 // Create a new user in the database
