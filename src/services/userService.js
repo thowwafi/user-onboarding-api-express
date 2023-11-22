@@ -1,13 +1,8 @@
-const admin = require('firebase-admin');
+// const admin = require('firebase-admin');
 const jwt = require('jsonwebtoken');
 const { Storage } = require('@google-cloud/storage');
 const JWT_SECRET_KEY = 'your-secret-key';
-
-// const serviceAccount = require('../../firebase-key.json');
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//     databaseURL: 'https://user-onboarding-api-default-rtdb.asia-southeast1.firebasedatabase.app/',
-// });
+const { admin } = require('../../firebase');
 
 const storage = new Storage({
     projectId: 'user-onboarding-api',
@@ -74,7 +69,6 @@ async function createUser(newUser) {
 
 async function authenticateUser(username, password) {
     const usersCollection = admin.firestore().collection('users');
-    
     const querySnapshot = await usersCollection.where('username', '==', username).where('password', '==', password).get();
   
     if (querySnapshot.empty) {

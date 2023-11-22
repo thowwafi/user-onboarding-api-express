@@ -118,7 +118,6 @@ async function  updateUserProfile(req, res) {
   
       // Optional: Handle file upload and update profile picture
       if (req.file) {
-        console.log('req.file', req.file);
         const profilePictureUrl = await userService.uploadProfilePicture(req.file);
         updatedProfile.profilePictureUrl = profilePictureUrl;
       }
