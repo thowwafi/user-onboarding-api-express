@@ -26,8 +26,6 @@ afterAll(() => {
   });
 
 describe('User API Endpoints', () => {
-  // Assuming you have mocked implementations for services
-  const mockUserService = require('../src/services/userService');
   const randomUsername = generateRandomUsername(8);
   describe('POST /api/register', () => {
     test('should register a new user', async () => {
@@ -35,7 +33,6 @@ describe('User API Endpoints', () => {
         .post('/api/register')
         .send({
           profileName: 'John Doe',
-        //   profilePicture: 'base64EncodedImageString',
           username: randomUsername,
           password: 'secure_password',
         });
@@ -45,18 +42,13 @@ describe('User API Endpoints', () => {
 
         await admin.firestore().collection('users').doc(response.body.userId).delete();
       
-      
-    //   expect(response.body).toHaveProperty('userProfile');
-      // Add more specific assertions based on your implementation
+    
     });
 
-    // Add more test cases for validation, error scenarios, etc.
   });
 
   describe('POST /api/login', () => {
     test('should login a user', async () => {
-      // Implement login logic in userService and mock the result
-      mockUserService.loginUser = jest.fn(() => 'JWT_access_token');
 
       const response = await request(app)
         .post('/api/login')
@@ -68,11 +60,45 @@ describe('User API Endpoints', () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('message', 'Login successful.');
       expect(response.body).toHaveProperty('accessToken');
-      // Add more specific assertions based on your implementation
     });
 
-    // Add more test cases for validation, error scenarios, etc.
   });
 
-  // Similar tests for other endpoints: GET /api/profile, PUT /api/profile
+  describe('GET /api/profile', () => {
+    test('should get user profile', async () => {
+      const responseSignIn = await request(app)
+        .post('/api/login')
+        .send({
+          username: 'ajohn_dopopope123',
+          password: 'secure_password',
+        });
+
+      const accessToken = responseSignIn.body.accessToken
+      const response = await request(app)
+        .get('/api/profile')
+        .set('Authorization', `Bearer ${accessToken}`);
+      expect(response.status).toBe(200);
+    });
+  });
+  describe('PUT /api/profile', () => {
+    test('should update user profile with profile picture', async () => {
+      // const profilePicturePath = 'path/to/mock/profile-picture.jpg';
+      const responseSignIn = await request(app)
+        .post('/api/login')
+        .send({
+          username: 'ajohn_dopopope123',
+          password: 'secure_password',
+        });
+
+      const accessToken = responseSignIn.body.accessToken
+      const response = await request(app)
+        .put('/api/profile')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .field('profileName', 'Updated Name')
+        .field('username', 'john_doe')
+        // .attach('profilePicture', profilePicturePath);
+  
+      expect(response.status).toBe(200);
+    });
+  });
 });
